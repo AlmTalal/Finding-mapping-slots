@@ -1,0 +1,17 @@
+{
+  "name": "inter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ethersproject/abstract-provider": "^5.7.0",
+    "@relicprotocol/client": "^0.0.9",
+    "ethers": "^5.7.2"
+  }
+}
