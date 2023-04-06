@@ -69,7 +69,7 @@ export class Storage {
     //I read the contract and balanceOf is always +1 bigger than the mapping key, I tried with the initial balanceOf Token but it didn't work
     let innerKey = parseInt(tbValue,16) - 1;
     //uris is just to store all the tokens uris
-    const uris : NounsArt[] = [];
+    const tokenUris : NounsArt[] = [];
     //Getting the slots of the values of the innerMapping (innerMaping uint => uint2) (getting slot Num of uint2)
     for (innerKey; innerKey>= 0; innerKey--){
         const innerMapValueSlot = utils.mapElemSlot(BigNumber.from(innerMapSlot), innerKey).toHexString();
@@ -77,10 +77,28 @@ export class Storage {
         const innerMapStorgeValue = await this._provider.getStorageAt(this._tokenAddress, BigNumber.from(innerMapValueSlot ), b);
         const innerMapValue = eUtils.hexZeroPad(BigNumber.from(innerMapStorgeValue).toHexString(),32);
         //Getting the uri from tokenURI function and pushing them to the array
-        const uri = await this._contract.tokenURI(innerMapValue);
-        uris.push(uri)
+        const tokenUri = await this._contract.tokenURI(innerMapValue);
+        tokenUris.push(tokenUri);
     }
-    /*
+
+    return {
+      block: b,
+      address: NOUNS_ADDRESS,
+      slots: [tbSlot, dSlot],
+      values: [tbValue, dValue],
+      art: tokenUris, // TODO :- add this
+    };
+  }
+}
+
+const explorer = new Storage();
+
+const userAddress ="0xFa4FC4ec2F81A4897743C5b4f45907c02ce06199";
+const block = 16862175
+
+explorer.getStorageValues(userAddress,block);
+
+/*
       TODO
       
       *NOTE* Above are 2 examples of how to get storage values from a contract.
@@ -107,24 +125,12 @@ export class Storage {
         - your goal is to get the token id of each value stored in this mapping
           for an address at a given block. if an address owns 3 tokens, you should
           be able to get the ids of all 3 of them
+          Done
 
         - you will use these ids to get the svg data returned from tokenURI(). when getting
           the svg data, you don't need to read historical data from slots. the data
           is available in the current state of the chain
+          Done
 
       [0]: https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-contracts/contracts/base/ERC721Enumerable.sol
     */
-
-    return {
-      block: b,
-      address: NOUNS_ADDRESS,
-      slots: [tbSlot, dSlot],
-      values: [tbValue, dValue],
-      art: uris, // TODO :- add this
-    };
-  }
-}
-
-const explorer = new Storage();
-
-explorer.getStorageValues("0xFa4FC4ec2F81A4897743C5b4f45907c02ce06199",16862175);
